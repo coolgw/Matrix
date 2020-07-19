@@ -16,7 +16,7 @@ End Sub
 Sub create_case_name_table()
 
     'Dim start_row, start_col As Long
-     start_row = 4
+     start_row = 3
      start_col = 4
 
      i = 0
