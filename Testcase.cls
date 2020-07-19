@@ -206,9 +206,9 @@ Public Sub generate_case_setting()
 
     Set setting = New Dictionary
     ' default setting
-    setting.Add Key:="UPGRADE", Item:=1
-    ' we should ramdom set gnome or text mode Please fix me!!
-    setting.Add Key:="DESKTOP", Item:="gnome"
+    setting_UPGRADE
+    setting_DESKTOP
+
     setting.Add Key:="BOOTFROM", Item:="d"
     setting.Add Key:="PATCH", Item:=1
     
@@ -273,3 +273,12 @@ Public Sub generate_case_setting()
     End If
     
 End Sub
+
+Public Sub setting_UPGRADE()
+    setting.Add Key:="UPGRADE", Item:=1
+End Sub
+Public Sub setting_DESKTOP()
+    ' we should ramdom set gnome or text mode Please fix me!!
+    setting.Add Key:="DESKTOP", Item:="gnome"
+End Sub
+
