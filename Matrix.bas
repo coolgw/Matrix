@@ -1,4 +1,4 @@
-Sub test()
+Sub aa()
 
     ' this is used to check generate test case logic
     start_row = Selection.row
@@ -13,6 +13,17 @@ Sub test()
 
 End Sub
 
+Public Function case_name(row As Integer, column As Integer) As Testcase
+    'Dim tc
+    Set tc = New Testcase
+    tc.row = row
+    tc.column = column
+    tc.generate_case_name
+    Set case_name = tc
+
+End Function
+
+
 Sub create_case_name_table()
 
     'Dim start_row, start_col As Long
@@ -24,11 +35,11 @@ Sub create_case_name_table()
     Do While j < 4
      i = 0
      Do While Cells(start_row + i, start_col + j) <> "" ' And i < 5
-        case_name = LCase(generate_case_name(start_row + i, start_col + j)(1))
-        p1p2 = LCase(generate_case_name(start_row + i, start_col + j)(2))
+        Set tc = case_name(start_row + i, start_col + j)
+        p1p2 = tc.p1p2
         
         'MsgBox case_name
-        Cells(start_row + i, start_col + 5 + j) = case_name
+        Cells(start_row + i, start_col + 5 + j) = tc.case_name
         If p1p2 = "p1" Then
         Cells(start_row + i, start_col + 5 + j).Interior.ColorIndex = 4
         ElseIf p1p2 = "p2" Then
