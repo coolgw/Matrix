@@ -9,6 +9,12 @@ Public case_name As String
 Public method As String
 Public hpc_system_role As String
 Public p1p2 As String
+Public reg As String
+Public patch_mode As String
+Public lock_mode As String
+Public smt_mode As String
+Public auto_mode As String
+Public setting As Dictionary
 Public Sub generate_case_name()
 
     'get online or offline
@@ -88,17 +94,17 @@ Public Sub generate_case_name()
     End If
       
     If InStr(case_mode, "/lock") = 7 Then
-      lock_mode = 1
+      lock_mode = "1"
     End If
       
     If InStr(case_mode, "/am") = 5 Then
-      auto_mode = 1
+      auto_mode = "1"
       reg = "media"
       method = "auto"
     End If
       
     If InStr(case_mode, "/ac") = 5 Then
-      auto_mode = 1
+      auto_mode = "1"
       reg = "scc"
       method = "auto"
     End If
@@ -139,7 +145,7 @@ Public Sub generate_case_name()
     End If
     
     If addons = "SMT Pattern" Then
-        smt_mode = 1
+        smt_mode = "1"
         addons = "Base"
     End If
     
@@ -165,7 +171,7 @@ Public Sub generate_case_name()
 
     ' generate case name and store in case_name
     ' migration_type
-    If auto_mode = 1 Then
+    If auto_mode = "1" Then
         case_name = "autoupgrade"
     Else
         case_name = migration_type
@@ -177,11 +183,11 @@ Public Sub generate_case_name()
         case_name = case_name & "_" & method
     End If
     ' smt_pattern
-    If smt_mode = 1 Then
+    If smt_mode = "1" Then
         case_name = case_name & "_" & "smt_pattern"
     End If
     ' lockmode
-    If lock_mode = 1 Then
+    If lock_mode = "1" Then
         case_name = case_name & "_" & "lock"
     End If
     ' hpc ld/ms/tm mode
@@ -194,6 +200,76 @@ Public Sub generate_case_name()
         case_name = ""
     End If
 
-
 End Sub
 
+Public Sub generate_case_setting()
+
+    Set setting = New Dictionary
+    ' default setting
+    setting.Add Key:="UPGRADE", Item:=1
+    ' we should ramdom set gnome or text mode Please fix me!!
+    setting.Add Key:="DESKTOP", Item:="gnome"
+    setting.Add Key:="BOOTFROM", Item:="d"
+    setting.Add Key:="PATCH", Item:=1
+    
+    'full or minial update
+    If patch_mode = "full" Then
+        setting.Add Key:="FULL_UPDATE", Item:=1
+    ElseIf patch_mode = "minimal" Then
+        setting.Add Key:="MINIMAL_UPDATE", Item:=1
+    End If
+    
+    'HDDVERSION
+    setting.Add Key:="HDDVERSION", Item:=UCase(Mid(base_ver, 5, 2) & "-" & Mid(base_ver, 7, 3))
+
+    'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
+    setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & pattern_mode _
+    & "-" & "updated.qcow2"
+  
+    'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
+    setting.Add Key:="ISO_1", Item:="SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso"
+  
+    'platform related setting
+    'ADDONS need check code, all package?? this seems only related with media upgrade
+    If platform = "s390x" Then
+          setting.Add Key:="ADDONURL", Item:=addons
+    ElseIf reg = "media" Then
+          setting.Add Key:="ADDONS", Item:="all-packages"
+    End If
+    
+    'scc addons
+    setting.Add Key:="SCC_ADDONS", Item:=Replace(addons, "+", ",")
+    
+    'register type
+    If reg = "media" Then
+        setting.Add Key:="MEDIA_UPGRADE", Item:=1
+    ElseIf smt_mode = 1 Then
+        setting.Add Key:="SMT_URL", Item:="10.162.30.45"
+    ElseIf reg = "scc" Then
+    
+    ElseIf reg = "pscc" Then
+    
+    End If
+    
+    'migration type
+    If migration_type = "offline" Then
+    ElseIf migration_type = "online" Then
+        setting.Add Key:="ONLINE_MIGRATION", Item:=1
+    End If
+    'migration method
+    If method = "y" Then
+        setting.Add Key:="MIGRATION_METHOD", Item:="yast"
+    ElseIf method = "zypp" Then
+        setting.Add Key:="MIGRATION_METHOD", Item:="zypper"
+    ElseIf method = "zdup" Then
+        setting.Add Key:="ZDUP", Item:=1
+    ElseIf method = "auto" Then
+        setting.Add Key:="AUTOYAST", Item:="http://admin.openqa.test/autoyast"
+    End If
+    
+    'lock mode
+    If lock_mode = "1" Then
+    setting.Add Key:="LOCK_PACKAGE", Item:="zip,sysvinit-tools"
+    End If
+    
+End Sub
