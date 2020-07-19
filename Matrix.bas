@@ -1,4 +1,4 @@
-Sub aa()
+Sub test()
 
     ' this is used to check generate test case logic
     start_row = Selection.row
@@ -9,7 +9,19 @@ Sub aa()
     tc.row = start_row
     tc.column = start_col
     tc.generate_case_name
-    MsgBox tc.case_name
+    tc.generate_case_setting
+    ' test case_name
+    ' MsgBox tc.case_name
+    ' MsgBox tc.setting("PATCH")
+
+    For Each k In tc.setting.Keys
+    ' Print key and value
+        myline = k & "=" & tc.setting(k) & ""
+        setting_str = setting_str & myline & vbCrLf
+    
+    Next
+    ' test setting
+    MsgBox setting_str
 
 End Sub
 
