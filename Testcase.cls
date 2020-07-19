@@ -8,6 +8,7 @@ Public platform As String
 Public case_name As String
 Public method As String
 Public hpc_system_role As String
+Public p1p2 As String
 Public Sub generate_case_name()
 
     'get online or offline
