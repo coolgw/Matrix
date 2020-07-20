@@ -14,7 +14,9 @@ Public patch_mode As String
 Public lock_mode As String
 Public smt_mode As String
 Public auto_mode As String
+Public base_origin_string As String
 Public setting As Dictionary
+Public setting_str As String
 Public Sub generate_case_name()
 
     'get online or offline
@@ -35,7 +37,8 @@ Public Sub generate_case_name()
       'MsgBox "The value of i is : " & base_ver
       i = i + 1
     Loop
-    base_ver = Replace(base_ver, " ", "")
+    'remove carry return
+    base_origin_string = Trim(Replace(base_ver, Chr(10), ""))
     base_ver = Replace(base_ver, "LTSS", "_LTSS")
     'MsgBox base_ver
     'get moudles
@@ -211,6 +214,8 @@ Public Sub generate_case_setting()
 
     setting.Add Key:="BOOTFROM", Item:="d"
     setting.Add Key:="PATCH", Item:=1
+    setting.Add Key:="ROLLBACK_AFTER_MIGRATION", Item:=1
+    
     
     'full or minial update
     If patch_mode = "full" Then
@@ -219,22 +224,15 @@ Public Sub generate_case_setting()
         setting.Add Key:="MINIMAL_UPDATE", Item:=1
     End If
     
-    'HDDVERSION
-    setting.Add Key:="HDDVERSION", Item:=UCase(Mid(base_ver, 5, 2) & "-" & Mid(base_ver, 7, 3))
-
-    'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
-    setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & pattern_mode _
-    & "-" & "updated.qcow2"
-  
-    'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
-    setting.Add Key:="ISO_1", Item:="SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso"
+    setting_HDDVERSION
+    setting_HDD_1
+    setting_ISO
+    setting_SLE_PRODUCT
   
     'platform related setting
     'ADDONS need check code, all package?? this seems only related with media upgrade
     If platform = "s390x" Then
           setting.Add Key:="ADDONURL", Item:=addons
-    ElseIf reg = "media" Then
-          setting.Add Key:="ADDONS", Item:="all-packages"
     End If
     
     'scc addons
@@ -243,13 +241,13 @@ Public Sub generate_case_setting()
     'register type
     If reg = "media" Then
         setting.Add Key:="MEDIA_UPGRADE", Item:=1
+        setting.Add Key:="ADDONS", Item:="all-packages"
     ElseIf smt_mode = 1 Then
-        setting.Add Key:="SMT_URL", Item:="10.162.30.45"
+        setting.Add Key:="SMT_URL", Item:="https://migration-smt.qa.suse.de"
     ElseIf reg = "scc" Then
-    
     ElseIf reg = "pscc" Then
-    
     End If
+
     
     'migration type
     If migration_type = "offline" Then
@@ -272,6 +270,14 @@ Public Sub generate_case_setting()
     setting.Add Key:="LOCK_PACKAGE", Item:="zip,sysvinit-tools"
     End If
     
+    'create setting_str
+    'For Each k In setting.Keys
+    ' Print key and value
+    '    myline = k & "=" & setting(k) & ""
+        'MsgBox myline
+    '   setting_str = setting_str & myline & vbCrLf
+    'Next
+    
 End Sub
 
 Public Sub setting_UPGRADE()
@@ -281,4 +287,39 @@ Public Sub setting_DESKTOP()
     ' we should ramdom set gnome or text mode Please fix me!!
     setting.Add Key:="DESKTOP", Item:="gnome"
 End Sub
+Public Sub setting_HDDVERSION()
+           
+    Dim arr() As String
 
+    arr = Split(base_origin_string, " ")
+    arr = Filter(arr, "SLES", Flase, vbTextCompare)
+    arr = Filter(arr, "SLED", Flase, vbTextCompare)
+    arr = Filter(arr, "SLE", Flase, vbTextCompare)
+    arr = Filter(arr, "LTSS", Flase, vbTextCompare)
+    arr = Filter(arr, "SLE", Flase, vbTextCompare)
+    arr = Filter(arr, "HPC", Flase, vbTextCompare)
+    setting.Add Key:="HDDVERSION", Item:=Trim(UCase(Join(arr, "-")))
+    
+End Sub
+
+Public Sub setting_HDD_1()
+    'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
+    If InStr(base_origin_string, "HPC") > 0 Then
+        setting.Add Key:="HDD_1", Item:="SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & hpc_system_role & "-" & pattern_mode & "-" & "updated.qcow2"
+    Else
+        setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & pattern_mode & "-" & "updated.qcow2"
+    End If
+    
+End Sub
+Public Sub setting_ISO()
+    'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
+    '+ISO: SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso
+    ' this need radom set?
+    setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+    
+End Sub
+Public Sub setting_SLE_PRODUCT()
+    If InStr(base_origin_string, "HPC") > 0 Then
+        setting.Add Key:="SLE_PRODUCT", Item:="hpc"
+    End If
+End Sub
