@@ -37,8 +37,8 @@ Public Sub generate_case_name()
       'MsgBox "The value of i is : " & base_ver
       i = i + 1
     Loop
-    base_origin_string = base_ver
-    base_ver = Replace(base_ver, " ", "")
+    'remove carry return
+    base_origin_string = Trim(Replace(base_ver, Chr(10), ""))
     base_ver = Replace(base_ver, "LTSS", "_LTSS")
     'MsgBox base_ver
     'get moudles
@@ -233,8 +233,6 @@ Public Sub generate_case_setting()
     'ADDONS need check code, all package?? this seems only related with media upgrade
     If platform = "s390x" Then
           setting.Add Key:="ADDONURL", Item:=addons
-    ElseIf reg = "media" Then
-          setting.Add Key:="ADDONS", Item:="all-packages"
     End If
     
     'scc addons
@@ -243,6 +241,7 @@ Public Sub generate_case_setting()
     'register type
     If reg = "media" Then
         setting.Add Key:="MEDIA_UPGRADE", Item:=1
+        setting.Add Key:="ADDONS", Item:="all-packages"
     ElseIf smt_mode = 1 Then
         setting.Add Key:="SMT_URL", Item:="https://migration-smt.qa.suse.de"
     ElseIf reg = "scc" Then
@@ -299,7 +298,7 @@ Public Sub setting_HDDVERSION()
     arr = Filter(arr, "LTSS", Flase, vbTextCompare)
     arr = Filter(arr, "SLE", Flase, vbTextCompare)
     arr = Filter(arr, "HPC", Flase, vbTextCompare)
-    setting.Add Key:="HDDVERSION", Item:=UCase(Join(arr, "-"))
+    setting.Add Key:="HDDVERSION", Item:=Trim(UCase(Join(arr, "-")))
     
 End Sub
 
