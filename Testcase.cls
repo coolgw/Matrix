@@ -315,7 +315,10 @@ Public Sub setting_ISO()
     'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
     '+ISO: SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso
     ' this need radom set?
-    setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+    If InStr(case_mode, "/fulldvd") > 0 Then
+      setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+    End If
+    
     
 End Sub
 Public Sub setting_SLE_PRODUCT()
