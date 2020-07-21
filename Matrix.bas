@@ -97,7 +97,7 @@ Sub create_setting_table()
         setting_str = "" ' make sure clear the string before rebuild
         For Each k In tc.setting.Keys
         ' Print key and value
-            myline = "          " & k & "=" & tc.setting(k) & ""
+            myline = "          " & k & ": '" & tc.setting(k) & "'"
             setting_str = setting_str & myline & vbCrLf
         Next
         case_setting_str = case_setting_str & setting_str
