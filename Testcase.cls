@@ -235,9 +235,8 @@ Public Sub generate_case_setting()
           setting.Add Key:="ADDONURL", Item:=addons
     End If
     
-    'scc addons
-    setting.Add Key:="SCC_ADDONS", Item:=Replace(addons, "+", ",")
-    
+    setting_SCC_ADDONS
+
     'register type
     If reg = "media" Then
         setting.Add Key:="MEDIA_UPGRADE", Item:=1
@@ -315,11 +314,24 @@ Public Sub setting_ISO()
     'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
     '+ISO: SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso
     ' this need radom set?
-    setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+    If InStr(case_mode, "/fulldvd") > 0 Then
+      setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+    End If
+    
     
 End Sub
 Public Sub setting_SLE_PRODUCT()
     If InStr(base_origin_string, "HPC") > 0 Then
         setting.Add Key:="SLE_PRODUCT", Item:="hpc"
     End If
+End Sub
+
+Public Sub setting_SCC_ADDONS()
+    'scc addons
+    If InStr(base_origin_string, "HPC") > 0 Then
+        If InStr(addons, "recommended") > 0 Then
+            addons = Replace(addons, "recommended", "basesys+desk+dev+hpc+py2+srv+wsm")
+        End If
+    End If
+    setting.Add Key:="SCC_ADDONS", Item:=Replace(addons, "+", ",")
 End Sub
