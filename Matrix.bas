@@ -91,13 +91,13 @@ Sub create_setting_table()
         case_setting_str = tc.case_name & vbCrLf & tc.setting_str & vbCrLf
         'format the content
         case_setting_str = "    - " & tc.case_name & ":" & vbCrLf
-        case_setting_str = case_setting_str & "        " & "testsuite:none" & vbCrLf
+        case_setting_str = case_setting_str & "        " & "testsuite: null" & vbCrLf
         case_setting_str = case_setting_str & "        " & "settings:" & vbCrLf
         
         setting_str = "" ' make sure clear the string before rebuild
         For Each k In tc.setting.Keys
         ' Print key and value
-            myline = "          " & k & "=" & tc.setting(k) & ""
+            myline = "          " & k & ": '" & tc.setting(k) & "'"
             setting_str = setting_str & myline & vbCrLf
         Next
         case_setting_str = case_setting_str & setting_str
