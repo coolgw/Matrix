@@ -342,7 +342,7 @@ Public Sub setting_ISO()
     If InStr(case_mode, "/fulldvd") > 0 Then
       setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
     End If
-    
+
 End Sub
 Public Sub setting_SLE_PRODUCT()
     If InStr(base_origin_string, "HPC") > 0 Then
@@ -365,3 +365,4 @@ Public Sub setting_ROLLBACK_AFTER_MIGRATION()
         setting.Add Key:="ROLLBACK_AFTER_MIGRATION", Item:=1
     End If
 End Sub
+
