@@ -390,8 +390,12 @@ Public Sub setting_BOOTFROM()
 End Sub
 
 Public Sub setting_pvm()
-    If InStr(case_mode, "/pvm") Then
-        setting.Add Key:="BOOT_HDD_IMAGE", Item:="norm"
+    If InStr(case_mode, "/pvm") Or (platform = "ppc64le" And InStr(base_ver, "15_SP2") > 0) Then  ' 15sp2 ppc64le all pvm case
+        If setting.Exists("BOOT_HDD_IMAGE") Then
+            setting("BOOT_HDD_IMAGE") = "norm"
+        Else
+            setting.Add Key:="BOOT_HDD_IMAGE", Item:="norm"
+        End If
         setting.Add Key:="SERIALDEV", Item:="hvc0"
         If migration_type = "offline" Then
             setting.Add Key:="YAML_SCHEDULE", Item:="schedule/migration/offline_spvm_Upgrade.yaml"
@@ -401,7 +405,7 @@ Public Sub setting_pvm()
 End Sub
 
 Public Sub setting_REPO_0()
-    If platform = "s390x" Or InStr(case_mode, "/pvm") Then ' fix me for pvm part
+    If platform = "s390x" Or InStr(case_mode, "/pvm") Or (platform = "ppc64le" And InStr(base_ver, "15_SP2") > 0) Then ' fix me for pvm part
         If migration_type = "offline" And reg = "media" Then
             setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
         Else
