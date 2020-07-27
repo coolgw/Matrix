@@ -115,6 +115,7 @@ Public Sub generate_case_name()
     End If
     
     ' hpc system role
+    hpc_system_role = ""
     If InStr(case_mode, "/ld") > 0 Then
         hpc_system_role = "ld"
     End If
@@ -324,21 +325,25 @@ End Sub
 
 Public Sub setting_HDD_1()
     'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
-    If InStr(base_origin_string, "HPC") > 0 Then
-        If setting("DESKTOP") = "gnome" Then
-            setting.Add Key:="HDD_1", Item:="SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & hpc_system_role & "-" & setting("DESKTOP") & "-" & pattern_mode & ".qcow2"
+    hdd = "SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
+    If hpc_system_role <> "" Then
+        If hpc_system_role = "ms" Then
+            hdd = hdd & "-" & "SERVER"
+        ElseIf hpc_system_role = "ld" Then
+            hdd = hdd & "-" & "DEV"
         Else
-            setting.Add Key:="HDD_1", Item:="SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & hpc_system_role & "-" & pattern_mode & ".qcow2"
+            hdd = hdd & "-" & "TEXTMODE"
         End If
-    Else
-        If setting("DESKTOP") = "gnome" Then
-            setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & setting("DESKTOP") & "-" & pattern_mode & ".qcow2"
-        Else
-            setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & pattern_mode & ".qcow2"
-        End If
-        
+    End If
+    If setting("DESKTOP") = "gnome" Then
+        hdd = hdd & "-" & "gnome"
+    End If
+    If pattern_mode = "all" Then
+        hdd = hdd & "-" & "allpatterns"
     End If
     
+    setting.Add Key:="HDD_1", Item:=hdd & ".qcow2"
+        
 End Sub
 Public Sub setting_ISO()
     'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
