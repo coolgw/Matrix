@@ -221,7 +221,7 @@ Public Sub generate_case_setting()
     setting_UPGRADE
     setting_DESKTOP
 
-    setting.Add Key:="BOOTFROM", Item:="d"
+
     setting.Add Key:="PATCH", Item:=1
 
     setting_ROLLBACK_AFTER_MIGRATION
@@ -237,6 +237,8 @@ Public Sub generate_case_setting()
     setting_HDD_1
     setting_ISO
     setting_SLE_PRODUCT
+    setting_KEEP_REGISTERED
+    
   
     'platform related setting
     'ADDONS need check code, all package?? this seems only related with media upgrade
@@ -261,6 +263,7 @@ Public Sub generate_case_setting()
     If migration_type = "offline" Then
     ElseIf migration_type = "online" Then
         setting.Add Key:="ONLINE_MIGRATION", Item:=1
+        setting.Add Key:="BOOT_HDD_IMAGE", Item:=1
     End If
     'migration method
     If method = "y" Then
@@ -278,13 +281,15 @@ Public Sub generate_case_setting()
     setting.Add Key:="LOCK_PACKAGE", Item:="zip,sysvinit-tools"
     End If
     
-    'create setting_str
-    'For Each k In setting.Keys
-    ' Print key and value
-    '    myline = k & "=" & setting(k) & ""
-        'MsgBox myline
-    '   setting_str = setting_str & myline & vbCrLf
-    'Next
+    'PATTERNS
+    setting.Add Key:="PATTERNS", Item:=pattern_mode
+    
+    setting_BOOTFROM
+    
+    'extra setting for pvm
+    setting_pvm
+    
+    setting_REPO_0
     
 End Sub
 
@@ -339,10 +344,14 @@ Public Sub setting_ISO()
     'ISO example ISO_1=SLE-%VERSION%-Packages-%ARCH%-Build%BUILD%-Media1.iso
     '+ISO: SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso
     ' this need radom set?
-    If InStr(case_mode, "/fulldvd") > 0 Then
-      setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+    If platform <> "s390x" Then
+        If (migration_type = "offline" And reg = "media") Or (InStr(case_mode, "/fulldvd") > 0) Then
+            setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+        Else
+            'default no need set since trigger command will take this
+            'setting.Add Key:="ISO", Item:="SLE-%VERSION%-Online-%ARCH%-Build%BUILD%-Media1.iso"
+        End If
     End If
-
 End Sub
 Public Sub setting_SLE_PRODUCT()
     If InStr(base_origin_string, "HPC") > 0 Then
@@ -361,8 +370,45 @@ Public Sub setting_SCC_ADDONS()
 End Sub
 
 Public Sub setting_ROLLBACK_AFTER_MIGRATION()
-    If InStr(case_mode, "rollback") Then
+    If InStr(case_mode, "rollback") Or InStr(base_origin_string, "HPC") > 0 Then
         setting.Add Key:="ROLLBACK_AFTER_MIGRATION", Item:=1
     End If
 End Sub
 
+Public Sub setting_KEEP_REGISTERED()
+    If reg <> "media" And migration_type = "offline" Then
+        setting.Add Key:="KEEP_REGISTERED", Item:=1
+    End If
+End Sub
+
+Public Sub setting_BOOTFROM()
+    If InStr(case_mode, "/zvm") Or InStr(case_mode, "/pvm") Then
+
+    Else
+        setting.Add Key:="BOOTFROM", Item:="d"
+    End If
+End Sub
+
+Public Sub setting_pvm()
+    If InStr(case_mode, "/pvm") Then
+        setting.Add Key:="BOOT_HDD_IMAGE", Item:="norm"
+        setting.Add Key:="SERIALDEV", Item:="hvc0"
+        If migration_type = "offline" Then
+            setting.Add Key:="YAML_SCHEDULE", Item:="schedule/migration/offline_spvm_Upgrade.yaml"
+            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-15-SP3-Full-ppc64le-Build%BUILD_SLE%-Media1"
+        End If
+    End If
+End Sub
+
+Public Sub setting_REPO_0()
+    If platform = "s390x" Or InStr(case_mode, "/pvm") Then ' fix me for pvm part
+        If migration_type = "offline" And reg = "media" Then
+            setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
+        Else
+            setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Online-ppc64le-Build%BUILD_SLE%-Media1"
+        End If
+        If InStr(case_mode, "fulldvd") Then  ' flag will override it
+            setting("REPO_0") = "SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
+        End If
+    End If
+End Sub
