@@ -17,6 +17,7 @@ Public auto_mode As String
 Public base_origin_string As String
 Public setting As Dictionary
 Public setting_str As String
+Public migration_type As String
 Public Sub generate_case_name()
 
     'get online or offline
@@ -39,7 +40,8 @@ Public Sub generate_case_name()
     Loop
     'remove carry return
     base_origin_string = Trim(Replace(base_ver, Chr(10), ""))
-    base_ver = Replace(base_ver, "LTSS", "_LTSS")
+    base_ver = Replace(base_ver, " ", "_")
+    'base_ver = Replace(base_ver, "LTSS", "_LTSS")
     'MsgBox base_ver
     'get moudles
     addons = Cells(row, 2)
@@ -172,6 +174,13 @@ Public Sub generate_case_name()
         addons = Join(filter_arr, "+")
     End If
 
+    'replace recommend for hpc
+    If InStr(base_origin_string, "HPC") > 0 Then
+        If InStr(addons, "recommended") > 0 Then
+            addons = Replace(addons, "recommended", "basesys+desk+dev+hpc+py2+srv+wsm")
+        End If
+    End If
+
     ' generate case name and store in case_name
     ' migration_type
     If auto_mode = "1" Then
@@ -214,8 +223,8 @@ Public Sub generate_case_setting()
 
     setting.Add Key:="BOOTFROM", Item:="d"
     setting.Add Key:="PATCH", Item:=1
-    setting.Add Key:="ROLLBACK_AFTER_MIGRATION", Item:=1
-    
+
+    setting_ROLLBACK_AFTER_MIGRATION
     
     'full or minial update
     If patch_mode = "full" Then
@@ -283,8 +292,15 @@ Public Sub setting_UPGRADE()
     setting.Add Key:="UPGRADE", Item:=1
 End Sub
 Public Sub setting_DESKTOP()
-    ' we should ramdom set gnome or text mode Please fix me!!
+    ' def desktop is gnome
     setting.Add Key:="DESKTOP", Item:="gnome"
+    ' for hpc test group we set textmode for tm systemrole
+    If hpc_system_role = "tm" Then
+        setting("DESKTOP") = "textmode"
+    End If
+    If InStr(case_mode, "textmode") Then
+        setting("DESKTOP") = "textmode"
+    End If
 End Sub
 Public Sub setting_HDDVERSION()
            
@@ -304,9 +320,18 @@ End Sub
 Public Sub setting_HDD_1()
     'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
     If InStr(base_origin_string, "HPC") > 0 Then
-        setting.Add Key:="HDD_1", Item:="SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & hpc_system_role & "-" & pattern_mode & "-" & "updated.qcow2"
+        If setting("DESKTOP") = "gnome" Then
+            setting.Add Key:="HDD_1", Item:="SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & hpc_system_role & "-" & setting("DESKTOP") & "-" & pattern_mode & ".qcow2"
+        Else
+            setting.Add Key:="HDD_1", Item:="SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & hpc_system_role & "-" & pattern_mode & ".qcow2"
+        End If
     Else
-        setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & pattern_mode & "-" & "updated.qcow2"
+        If setting("DESKTOP") = "gnome" Then
+            setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & setting("DESKTOP") & "-" & pattern_mode & ".qcow2"
+        Else
+            setting.Add Key:="HDD_1", Item:="SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM-" & pattern_mode & ".qcow2"
+        End If
+        
     End If
     
 End Sub
@@ -317,8 +342,7 @@ Public Sub setting_ISO()
     If InStr(case_mode, "/fulldvd") > 0 Then
       setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
     End If
-    
-    
+
 End Sub
 Public Sub setting_SLE_PRODUCT()
     If InStr(base_origin_string, "HPC") > 0 Then
@@ -335,3 +359,10 @@ Public Sub setting_SCC_ADDONS()
     End If
     setting.Add Key:="SCC_ADDONS", Item:=Replace(addons, "+", ",")
 End Sub
+
+Public Sub setting_ROLLBACK_AFTER_MIGRATION()
+    If InStr(case_mode, "rollback") Then
+        setting.Add Key:="ROLLBACK_AFTER_MIGRATION", Item:=1
+    End If
+End Sub
+

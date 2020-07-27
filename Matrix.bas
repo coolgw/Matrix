@@ -91,7 +91,7 @@ Sub create_setting_table()
         case_setting_str = tc.case_name & vbCrLf & tc.setting_str & vbCrLf
         'format the content
         case_setting_str = "    - " & tc.case_name & ":" & vbCrLf
-        case_setting_str = case_setting_str & "        " & "testsuite:none" & vbCrLf
+        case_setting_str = case_setting_str & "        " & "testsuite: null" & vbCrLf
         case_setting_str = case_setting_str & "        " & "settings:" & vbCrLf
         
         setting_str = "" ' make sure clear the string before rebuild
