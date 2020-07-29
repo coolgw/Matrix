@@ -253,8 +253,12 @@ Public Sub generate_case_setting()
     If reg = "media" Then
         setting.Add Key:="MEDIA_UPGRADE", Item:=1
         setting.Add Key:="ADDONS", Item:="all-packages"
-    ElseIf smt_mode = 1 Then
+    ElseIf reg = "smt" Then
         setting.Add Key:="SMT_URL", Item:="https://migration-smt.qa.suse.de"
+        setting.Add Key:="+SCC_URL", Item:="none"
+    ElseIf reg = "rmt" Then
+        setting.Add Key:="SMT_URL", Item:="https://openqa-rmt.suse.de"
+        setting.Add Key:="+SCC_URL", Item:="none"
     ElseIf reg = "scc" Then
     ElseIf reg = "pscc" Then
     End If
