@@ -328,8 +328,12 @@ Public Sub setting_HDDVERSION()
 End Sub
 
 Public Sub setting_HDD_1()
-    'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
-    hdd = "SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
+    If InStr(base_origin_string, "HPC") > 0 Then
+        'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
+        hdd = "SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
+    Else
+        hdd = "SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
+    End If
     If hpc_system_role <> "" Then
         If hpc_system_role = "ms" Then
             hdd = hdd & "-" & "SERVER"
