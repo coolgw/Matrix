@@ -18,8 +18,13 @@ Public base_origin_string As String
 Public setting As Dictionary
 Public setting_str As String
 Public migration_type As String
+Public module_name As Dictionary
+
+
 Public Sub generate_case_name()
 
+    'create_module_name
+    init_module_name
     'get online or offline
     'MsgBox ActiveSheet.Name
     
@@ -296,6 +301,8 @@ Public Sub generate_case_setting()
     
     setting_REPO_0
     
+    setting_ZDUP
+    
 End Sub
 
 Public Sub setting_UPGRADE()
@@ -437,4 +444,70 @@ Public Sub setting_REPO_0()
             setting("REPO_0") = "SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
         End If
     End If
+    
+    
+End Sub
+
+Public Sub setting_ZDUP()
+    If method = "zdup" Then
+        setting("ZDUP") = "1"
+        zdup_repo = ""
+        head = "ftp://openqa.suse.de/SLE-%VERSION%-"
+        tail = "-%ARCH%-Build%BUILD_SLE%-Media1/"
+        'set productor repo
+        If InStr(base_ver, "SLED") Then
+            prod_repo = "ftp://openqa.suse.de/SLE-%VERSION%-Product-" & "SLED" & "-POOL-%ARCH%-Build%BUILD_SLE%-Media1/"
+        ElseIf InStr(base_ver, "SLES") Then
+            prod_repo = "ftp://openqa.suse.de/SLE-%VERSION%-Product-" & "SLES" & "-POOL-%ARCH%-Build%BUILD_SLE%-Media1/"
+        ElseIf InStr(base_ver, "HPC") Then
+            prod_repo = "ftp://openqa.suse.de/SLE-%VERSION%-Product-" & "HPC" & "-POOL-%ARCH%-Build%BUILD_SLE%-Media1/"
+        End If
+        
+        'set iso repo
+        If (migration_type = "offline" And reg = "media") Or (InStr(case_mode, "/fulldvd") > 0) Then
+            iso_repo = "ftp://openqa.suse.de/SLE-%VERSION%-" & "Online" & "-%ARCH%-Build%BUILD%-Media1/"
+        Else
+            iso_repo = "ftp://openqa.suse.de/SLE-%VERSION%-" & "Full" & "-%ARCH%-Build%BUILD%-Media1/"
+        End If
+        
+        'set moudle repo
+        zdup_repo = zdup_repo & prod_repo & ","
+        zdup_repo = zdup_repo & iso_repo & ","
+        
+       'set module repo
+        
+        a = Split(addons, "+")
+        b = UBound(a)
+        For i = 0 To b
+           tmp = "ftp://openqa.suse.de/SLE-%VERSION%-Module-" & module_name(a(i)) & "-POOL-%ARCH%-Build%BUILD_SLE%-Media1/"
+           zdup_repo = zdup_repo & tmp & ","
+        Next
+        setting.Add Key:="ZDUPREPOS", Item:=zdup_repo
+        
+    End If
+    
+End Sub
+
+Public Sub init_module_name()
+    Set module_name = New Dictionary
+    module_name.Add Key:="basesys", Item:="Basesystem"
+    module_name.Add Key:="srv", Item:="Server-Application"
+    module_name.Add Key:="desk", Item:="Desktop-Application"
+    module_name.Add Key:="dev", Item:="Development-Tools"
+    module_name.Add Key:="lp", Item:="Live-Patching"
+    module_name.Add Key:="sdk", Item:="SDK"
+    module_name.Add Key:="asmm", Item:="Adv-System-Mgmt"
+    module_name.Add Key:="contm", Item:="Container"
+    module_name.Add Key:="lgm", Item:="Legacy"
+    module_name.Add Key:="pcm", Item:="Public Cloud"
+    module_name.Add Key:="tcm", Item:="Toolchain"
+    module_name.Add Key:="wsm", Item:="Web-And-Scripting"
+    module_name.Add Key:="phub", Item:="Package-Hub"
+    module_name.Add Key:="cap", Item:="Cloud-Application-Platform"
+    module_name.Add Key:="we", Item:="WE"
+    module_name.Add Key:="idu", Item:="IBM-DLPAR-SDK"
+    module_name.Add Key:="ids", Item:="IBM-DLPART-Utils"
+    module_name.Add Key:="tsm", Item:="Transactional-Server"
+    module_name.Add Key:="python2", Item:="Python2"
+    
 End Sub
