@@ -304,8 +304,8 @@ End Sub
 Public Sub setting_DESKTOP()
     ' def desktop is gnome
     setting.Add Key:="DESKTOP", Item:="gnome"
-    ' for hpc test group we set textmode for tm systemrole
-    If hpc_system_role = "tm" Then
+    ' for hpc test group we set textmode for tm and ms systemrole, set textmode for ld
+    If hpc_system_role = "ms" Or hpc_system_role = "tm" Then
         setting("DESKTOP") = "textmode"
     End If
     If InStr(case_mode, "textmode") Then
@@ -331,9 +331,18 @@ Public Sub setting_HDD_1()
     If InStr(base_origin_string, "HPC") > 0 Then
         'HDD_1 example HDD_1=SLES-12-SP3-%ARCH%-allpatterns-updated.qcow2
         hdd = "SLEHPC-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
+    ElseIf InStr(base_origin_string, "SLED") > 0 Then
+        hdd = "SLED-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
     Else
         hdd = "SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
     End If
+    
+    If InStr(base_ver, "15_SP") > 0 And InStr(addons, "dev") > 0 Then
+        hdd = hdd & "-" & "SDK"
+    ElseIf (InStr(base_ver, "12_SP") > 0 Or InStr(base_ver, "11_SP") > 0) And InStr(addons, "SDK") > 0 Then
+        hdd = hdd & "-" & "SDK"
+    End If
+    
     If hpc_system_role <> "" Then
         If hpc_system_role = "ms" Then
             hdd = hdd & "-" & "SERVER"
