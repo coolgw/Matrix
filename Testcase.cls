@@ -491,23 +491,24 @@ End Sub
 Public Sub init_module_name()
     Set module_name = New Dictionary
     module_name.Add Key:="basesys", Item:="Basesystem"
-    module_name.Add Key:="srv", Item:="Server-Application"
-    module_name.Add Key:="desk", Item:="Desktop-Application"
+    module_name.Add Key:="srv", Item:="Server-Applications"
+    module_name.Add Key:="desk", Item:="Desktop-Applications"
     module_name.Add Key:="dev", Item:="Development-Tools"
     module_name.Add Key:="lp", Item:="Live-Patching"
     module_name.Add Key:="sdk", Item:="SDK"
-    module_name.Add Key:="asmm", Item:="Adv-System-Mgmt"
+    module_name.Add Key:="asmm", Item:="Adv-System-Mgmt" '15 not support
     module_name.Add Key:="contm", Item:="Container"
     module_name.Add Key:="lgm", Item:="Legacy"
     module_name.Add Key:="pcm", Item:="Public Cloud"
-    module_name.Add Key:="tcm", Item:="Toolchain"
-    module_name.Add Key:="wsm", Item:="Web-And-Scripting"
-    module_name.Add Key:="phub", Item:="Package-Hub"
+    module_name.Add Key:="tcm", Item:="Toolchain" '15 not support
+    module_name.Add Key:="wsm", Item:="Web-Scripting"
+    module_name.Add Key:="phub", Item:="Packagehub"
     module_name.Add Key:="cap", Item:="Cloud-Application-Platform"
-    module_name.Add Key:="we", Item:="WE"
+    module_name.Add Key:="we", Item:="Product-WE"
     module_name.Add Key:="idu", Item:="IBM-DLPAR-SDK"
     module_name.Add Key:="ids", Item:="IBM-DLPART-Utils"
     module_name.Add Key:="tsm", Item:="Transactional-Server"
     module_name.Add Key:="python2", Item:="Python2"
     
 End Sub
+
