@@ -344,10 +344,12 @@ Public Sub setting_HDD_1()
         hdd = "SLES-" & setting("HDDVERSION") & "-%ARCH%-" & "GM"
     End If
     
-    If InStr(base_ver, "15_SP") > 0 And InStr(addons, "dev") > 0 Then
-        hdd = hdd & "-" & "SDK"
-    ElseIf (InStr(base_ver, "12_SP") > 0 Or InStr(base_ver, "11_SP") > 0) And InStr(addons, "SDK") > 0 Then
-        hdd = hdd & "-" & "SDK"
+    If InStr(base_origin_string, "HPC") = 0 Then
+        If InStr(base_ver, "15_SP") > 0 And InStr(addons, "dev") > 0 Then
+            hdd = hdd & "-" & "SDK"
+        ElseIf (InStr(base_ver, "12_SP") > 0 Or InStr(base_ver, "11_SP") > 0) And InStr(addons, "SDK") > 0 Then
+            hdd = hdd & "-" & "SDK"
+        End If
     End If
     
     If hpc_system_role <> "" Then
