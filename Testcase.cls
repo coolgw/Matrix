@@ -292,7 +292,9 @@ Public Sub generate_case_setting()
     End If
     
     'PATTERNS
-    setting.Add Key:="PATTERNS", Item:=pattern_mode
+    If pattern_mode = "all" Then
+        setting.Add Key:="PATTERNS", Item:=pattern_mode
+    End If
     
     setting_BOOTFROM
     
