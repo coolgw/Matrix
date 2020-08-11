@@ -248,9 +248,10 @@ Public Sub generate_case_setting()
   
     'platform related setting
     'ADDONS need check code, all package?? this seems only related with media upgrade
-    If platform = "s390x" Then
-          setting.Add Key:="ADDONURL", Item:=addons
-    End If
+    'base lemon's feedback, we do not need this setting now
+    'If platform = "s390x" Then
+    '      setting.Add Key:="ADDONURL", Item:=addons
+    'End If
     
     setting_SCC_ADDONS
 
