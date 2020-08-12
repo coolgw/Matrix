@@ -400,7 +400,7 @@ Public Sub setting_SCC_ADDONS()
             addons = Replace(addons, "recommended", "basesys+desk+dev+hpc+py2+srv+wsm")
         End If
     End If
-    setting.Add Key:="SCC_ADDONS", Item:=Replace(addons, "+", ",")
+    setting.Add Key:="SCC_ADDONS", Item:=Replace(LCase(addons), "+", ",")
 End Sub
 
 Public Sub setting_ROLLBACK_AFTER_MIGRATION()
