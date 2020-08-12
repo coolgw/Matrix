@@ -400,7 +400,7 @@ Public Sub setting_SCC_ADDONS()
     'scc addons
     If InStr(base_origin_string, "HPC") > 0 Then
         If InStr(addons, "recommended") > 0 Then
-            addons = Replace(addons, "recommended", "basesys-desk-dev-hpc-py2-srv-wsm")
+            addons = Replace(addons, "recommended", "base-desk-dev-hpc-py2-srv-wsm")
         End If
     End If
     Dim scc_str As String
