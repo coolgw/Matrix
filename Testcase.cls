@@ -92,6 +92,8 @@ Public Sub generate_case_name()
     base_ver = Trim(base_ver)
     addons = Replace(addons, Chr(10), "")
     addons = Trim(addons)
+    addons = LCase(addons)
+    addons = Replace(addons, "+", "-")
     pattern_mode = Replace(pattern_mode, Chr(10), "")
     pattern_mode = Trim(pattern_mode)
     case_mode = Replace(case_mode, Chr(10), "")
@@ -183,7 +185,7 @@ Public Sub generate_case_name()
     'replace recommend for hpc
     If InStr(base_origin_string, "HPC") > 0 Then
         If InStr(addons, "recommended") > 0 Then
-            addons = Replace(addons, "recommended", "basesys+desk+dev+hpc+py2+srv+wsm")
+            addons = Replace(addons, "recommended", "base-desk-dev-hpc-py2-srv-wsm")
         End If
     End If
 
@@ -195,6 +197,7 @@ Public Sub generate_case_name()
         case_name = migration_type
     End If
     ' base_ver + reg + addons + pattern_mode + patch_mode
+    ' addons need replace "+" to "-"
     case_name = case_name & "_" & base_ver & "_" & reg & "_" & addons & "_" & pattern_mode & "_" & patch_mode
     ' method
     If method <> "" Then
@@ -397,10 +400,14 @@ Public Sub setting_SCC_ADDONS()
     'scc addons
     If InStr(base_origin_string, "HPC") > 0 Then
         If InStr(addons, "recommended") > 0 Then
-            addons = Replace(addons, "recommended", "basesys+desk+dev+hpc+py2+srv+wsm")
+            addons = Replace(addons, "recommended", "basesys-desk-dev-hpc-py2-srv-wsm")
         End If
     End If
-    setting.Add Key:="SCC_ADDONS", Item:=Replace(LCase(addons), "+", ",")
+    Dim scc_str As String
+    scc_str = Replace(LCase(addons), "-", ",")
+    scc_str = Replace(scc_str, "basesys", "base")
+    setting.Add Key:="SCC_ADDONS", Item:=Replace(scc_str, "+", ",")
+
 End Sub
 
 Public Sub setting_ROLLBACK_AFTER_MIGRATION()
