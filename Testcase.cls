@@ -154,19 +154,19 @@ Public Sub generate_case_name()
     smt_mode = 0
     If addons = "Minimal" Then
         patch_mode = "minimal"
-        addons = "Base"
+        addons = "base"
     End If
     
     If addons = "SMT Pattern" Then
         smt_mode = "1"
-        addons = "Base"
+        addons = "base"
     End If
     
     ' special handel part for addons, some addons not support on specific platform
     ' aarch64 need remove asmm, contm, ppc64le need remove we
     Dim arr() As String
     Dim filter_arr() As String
-    If platform = "ppc64le" And InStr(addons, "WE") > 0 Then
+    If platform = "ppc64le" And InStr(addons, "we") > 0 Then
         arr = Split(addons, "+")
         filter_arr = Filter(arr, "we", Flase, vbTextCompare)
         addons = Join(filter_arr, "+")
@@ -177,15 +177,20 @@ Public Sub generate_case_name()
         addons = Join(filter_arr, "+")
     End If
     If platform = "aarch64" And InStr(addons, "contm") > 0 Then
-        arr = Split(addons, "+")
+        arr = Split(addons, "-")
         filter_arr = Filter(arr, "contm", Flase, vbTextCompare)
-        addons = Join(filter_arr, "+")
+        addons = Join(filter_arr, "-")
+    End If
+    If platform = "aarch64" And InStr(addons, "lp") > 0 Then
+        arr = Split(addons, "-")
+        filter_arr = Filter(arr, "lp", Flase, vbTextCompare)
+        addons = Join(filter_arr, "-")
     End If
 
     'replace recommend for hpc
     If InStr(base_origin_string, "HPC") > 0 Then
         If InStr(addons, "recommended") > 0 Then
-            addons = Replace(addons, "recommended", "base-desk-dev-hpc-py2-srv-wsm")
+            addons = Replace(addons, "recommended", "basesys-desk-dev-hpc-python2-srv-wsm")
         End If
     End If
 
@@ -303,11 +308,13 @@ Public Sub generate_case_setting()
     setting_BOOTFROM
     
     'extra setting for pvm
-    setting_pvm
+    
     
     setting_REPO_0
     
     setting_ZDUP
+    
+    setting_pvm
     
 End Sub
 
@@ -398,15 +405,10 @@ End Sub
 
 Public Sub setting_SCC_ADDONS()
     'scc addons
-    If InStr(base_origin_string, "HPC") > 0 Then
-        If InStr(addons, "recommended") > 0 Then
-            addons = Replace(addons, "recommended", "base-desk-dev-hpc-py2-srv-wsm")
-        End If
-    End If
     Dim scc_str As String
     scc_str = Replace(LCase(addons), "-", ",")
     scc_str = Replace(scc_str, "basesys", "base")
-    setting.Add Key:="SCC_ADDONS", Item:=Replace(scc_str, "+", ",")
+    setting.Add Key:="SCC_ADDONS", Item:=scc_str
 
 End Sub
 
@@ -442,22 +444,20 @@ Public Sub setting_pvm()
             setting.Add Key:="YAML_SCHEDULE", Item:="schedule/migration/offline_spvm_Upgrade.yaml"
             setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-15-SP3-Full-ppc64le-Build%BUILD_SLE%-Media1"
         End If
+        If setting.Exists("PATTERNS") Then
+            setting.Remove ("PATTERNS")
+        End If
     End If
 End Sub
 
 Public Sub setting_REPO_0()
     If platform = "s390x" Or InStr(case_mode, "/pvm") Or (platform = "ppc64le" And InStr(base_ver, "15_SP2") > 0) Then ' fix me for pvm part
-        If migration_type = "offline" And reg = "media" Then
-            setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
+        If (migration_type = "offline" And reg = "media") Or InStr(case_mode, "fulldvd") Then
+            setting.Add Key:="+REPO_0", Item:="SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
         Else
             setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Online-ppc64le-Build%BUILD_SLE%-Media1"
         End If
-        If InStr(case_mode, "fulldvd") Then  ' flag will override it
-            setting("REPO_0") = "SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
-        End If
     End If
-    
-    
 End Sub
 
 Public Sub setting_ZDUP()
@@ -488,7 +488,7 @@ Public Sub setting_ZDUP()
         
        'set module repo
         
-        a = Split(addons, "+")
+        a = Split(addons, "-")
         b = UBound(a)
         For i = 0 To b
            tmp = "ftp://openqa.suse.de/SLE-%VERSION%-Module-" & module_name(a(i)) & "-POOL-%ARCH%-Build%BUILD_SLE%-Media1/"
