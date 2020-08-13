@@ -167,14 +167,14 @@ Public Sub generate_case_name()
     Dim arr() As String
     Dim filter_arr() As String
     If platform = "ppc64le" And InStr(addons, "we") > 0 Then
-        arr = Split(addons, "+")
+        arr = Split(addons, "-")
         filter_arr = Filter(arr, "we", Flase, vbTextCompare)
-        addons = Join(filter_arr, "+")
+        addons = Join(filter_arr, "-")
     End If
     If platform = "aarch64" And InStr(addons, "asmm") > 0 Then
-        arr = Split(addons, "+")
+        arr = Split(addons, "-")
         filter_arr = Filter(arr, "asmm", Flase, vbTextCompare)
-        addons = Join(filter_arr, "+")
+        addons = Join(filter_arr, "-")
     End If
     If platform = "aarch64" And InStr(addons, "contm") > 0 Then
         arr = Split(addons, "-")
@@ -202,7 +202,7 @@ Public Sub generate_case_name()
         case_name = migration_type
     End If
     ' base_ver + reg + addons + pattern_mode + patch_mode
-    ' addons need replace "+" to "-"
+
     case_name = case_name & "_" & base_ver & "_" & reg & "_" & addons & "_" & pattern_mode & "_" & patch_mode
     ' method
     If method <> "" Then
@@ -453,9 +453,9 @@ End Sub
 Public Sub setting_REPO_0()
     If platform = "s390x" Or InStr(case_mode, "/pvm") Or (platform = "ppc64le" And InStr(base_ver, "15_SP2") > 0) Then ' fix me for pvm part
         If (migration_type = "offline" And reg = "media") Or InStr(case_mode, "fulldvd") Then
-            setting.Add Key:="+REPO_0", Item:="SLE-%VERSION%-Full-ppc64le-Build%BUILD_SLE%-Media1"
+            setting.Add Key:="+REPO_0", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD_SLE%-Media1"
         Else
-            setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Online-ppc64le-Build%BUILD_SLE%-Media1"
+            setting.Add Key:="REPO_0", Item:="SLE-%VERSION%-Online-%ARCH%-Build%BUILD_SLE%-Media1"
         End If
     End If
 End Sub
