@@ -443,7 +443,7 @@ Public Sub setting_pvm()
         If migration_type = "offline" Then
             setting.Add Key:="YAML_SCHEDULE", Item:="schedule/migration/offline_spvm_Upgrade.yaml"
             setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1"
-        ElseIf migration_type = "oneline" Then
+        ElseIf migration_type = "online" Then
             setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-%VERSION%-Online-%ARCH%-Build%BUILD%-Media1"
         End If
         'If setting.Exists("PATTERNS") Then
