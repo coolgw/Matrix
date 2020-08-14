@@ -408,6 +408,7 @@ Public Sub setting_SCC_ADDONS()
     Dim scc_str As String
     scc_str = Replace(LCase(addons), "-", ",")
     scc_str = Replace(scc_str, "basesys", "base")
+    scc_str = Replace(scc_str, "lp", "live")
     setting.Add Key:="SCC_ADDONS", Item:=scc_str
 
 End Sub
