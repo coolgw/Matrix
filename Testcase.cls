@@ -152,7 +152,7 @@ Public Sub generate_case_name()
     patch_mode = "full"
     'default smt_mode is 0
     smt_mode = 0
-    If addons = "Minimal" Then
+    If addons = "minimal" Then
         patch_mode = "minimal"
         addons = "base"
     End If
@@ -442,11 +442,13 @@ Public Sub setting_pvm()
         setting.Add Key:="SERIALDEV", Item:="hvc0"
         If migration_type = "offline" Then
             setting.Add Key:="YAML_SCHEDULE", Item:="schedule/migration/offline_spvm_Upgrade.yaml"
-            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-15-SP3-Full-ppc64le-Build%BUILD_SLE%-Media1"
+            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1"
+        ElseIf migration_type = "online" Then
+            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-%VERSION%-Online-%ARCH%-Build%BUILD%-Media1"
         End If
-        If setting.Exists("PATTERNS") Then
-            setting.Remove ("PATTERNS")
-        End If
+        'If setting.Exists("PATTERNS") Then
+        '    setting.Remove ("PATTERNS")
+        'End If
     End If
 End Sub
 
