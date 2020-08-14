@@ -167,14 +167,14 @@ Public Sub generate_case_name()
     Dim arr() As String
     Dim filter_arr() As String
     If platform = "ppc64le" And InStr(addons, "we") > 0 Then
-        arr = Split(addons, "+")
+        arr = Split(addons, "-")
         filter_arr = Filter(arr, "we", Flase, vbTextCompare)
-        addons = Join(filter_arr, "+")
+        addons = Join(filter_arr, "-")
     End If
     If platform = "aarch64" And InStr(addons, "asmm") > 0 Then
-        arr = Split(addons, "+")
+        arr = Split(addons, "-")
         filter_arr = Filter(arr, "asmm", Flase, vbTextCompare)
-        addons = Join(filter_arr, "+")
+        addons = Join(filter_arr, "-")
     End If
     If platform = "aarch64" And InStr(addons, "contm") > 0 Then
         arr = Split(addons, "-")
@@ -202,7 +202,7 @@ Public Sub generate_case_name()
         case_name = migration_type
     End If
     ' base_ver + reg + addons + pattern_mode + patch_mode
-    ' addons need replace "+" to "-"
+
     case_name = case_name & "_" & base_ver & "_" & reg & "_" & addons & "_" & pattern_mode & "_" & patch_mode
     ' method
     If method <> "" Then
