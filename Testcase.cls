@@ -152,7 +152,7 @@ Public Sub generate_case_name()
     patch_mode = "full"
     'default smt_mode is 0
     smt_mode = 0
-    If addons = "Minimal" Then
+    If addons = "minimal" Then
         patch_mode = "minimal"
         addons = "base"
     End If
@@ -167,14 +167,14 @@ Public Sub generate_case_name()
     Dim arr() As String
     Dim filter_arr() As String
     If platform = "ppc64le" And InStr(addons, "we") > 0 Then
-        arr = Split(addons, "-")
+        arr = Split(addons, "+")
         filter_arr = Filter(arr, "we", Flase, vbTextCompare)
-        addons = Join(filter_arr, "-")
+        addons = Join(filter_arr, "+")
     End If
     If platform = "aarch64" And InStr(addons, "asmm") > 0 Then
-        arr = Split(addons, "-")
+        arr = Split(addons, "+")
         filter_arr = Filter(arr, "asmm", Flase, vbTextCompare)
-        addons = Join(filter_arr, "-")
+        addons = Join(filter_arr, "+")
     End If
     If platform = "aarch64" And InStr(addons, "contm") > 0 Then
         arr = Split(addons, "-")
@@ -202,7 +202,7 @@ Public Sub generate_case_name()
         case_name = migration_type
     End If
     ' base_ver + reg + addons + pattern_mode + patch_mode
-
+    ' addons need replace "+" to "-"
     case_name = case_name & "_" & base_ver & "_" & reg & "_" & addons & "_" & pattern_mode & "_" & patch_mode
     ' method
     If method <> "" Then
@@ -442,11 +442,13 @@ Public Sub setting_pvm()
         setting.Add Key:="SERIALDEV", Item:="hvc0"
         If migration_type = "offline" Then
             setting.Add Key:="YAML_SCHEDULE", Item:="schedule/migration/offline_spvm_Upgrade.yaml"
-            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-15-SP3-Full-ppc64le-Build%BUILD_SLE%-Media1"
+            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1"
+        ElseIf migration_type = "oneline" Then
+            setting.Add Key:="MIRROR_HTTP", Item:="http://openqa.suse.de/assets/repo/SLE-%VERSION%-Online-%ARCH%-Build%BUILD%-Media1"
         End If
-        If setting.Exists("PATTERNS") Then
-            setting.Remove ("PATTERNS")
-        End If
+        'If setting.Exists("PATTERNS") Then
+        '    setting.Remove ("PATTERNS")
+        'End If
     End If
 End Sub
 
