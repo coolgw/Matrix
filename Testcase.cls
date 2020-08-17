@@ -391,6 +391,7 @@ Public Sub setting_ISO()
     If platform <> "s390x" Then
         If (migration_type = "offline" And reg = "media") Or (InStr(case_mode, "/fulldvd") > 0) Then
             setting.Add Key:="+ISO", Item:="SLE-%VERSION%-Full-%ARCH%-Build%BUILD%-Media1.iso"
+            setting.Add Key:="ISO_MAXSIZE", Item:="0"
         Else
             'default no need set since trigger command will take this
             'setting.Add Key:="ISO", Item:="SLE-%VERSION%-Online-%ARCH%-Build%BUILD%-Media1.iso"
