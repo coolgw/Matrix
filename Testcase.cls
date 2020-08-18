@@ -316,6 +316,8 @@ Public Sub generate_case_setting()
     
     setting_pvm
     
+    setting_SUSEMIRROR
+    
 End Sub
 
 Public Sub setting_UPGRADE()
@@ -410,6 +412,8 @@ Public Sub setting_SCC_ADDONS()
     scc_str = Replace(LCase(addons), "-", ",")
     scc_str = Replace(scc_str, "basesys", "base")
     scc_str = Replace(scc_str, "lp", "live")
+    scc_str = Replace(scc_str, "srv", "serverapp")
+    scc_str = Replace(scc_str, "desk", "desktop")
     setting.Add Key:="SCC_ADDONS", Item:=scc_str
 
 End Sub
@@ -503,6 +507,16 @@ Public Sub setting_ZDUP()
     End If
     
 End Sub
+Public Sub setting_SUSEMIRROR()
+
+    If method = "zdup" And platform = "s390x" Then
+        setting.Add Key:="SUSEMIRROR", Item:="1"
+    End If
+
+End Sub
+
+
+
 
 Public Sub init_module_name()
     Set module_name = New Dictionary
